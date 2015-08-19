@@ -49,22 +49,38 @@ int main(int argc, char** argv)
     string video_file = parser.get<string>("video");
     bool use_camera = parser.get<bool>("camera");
 
-    // TODO: Load detector.
+    CascadeClassifier detector;
+    detector.load(detector_file);
+
+    char key = 0;
 
     if (!image_file.empty())
     {
-        // TODO: Detect objects on image.
-
+        Mat image = imread(image_file);
+        vector<Rect> objects;
+        detector.detectMultiScale(image, objects);
+        drawDetections(objects, Scalar(255, 0, 0), image);
+        while (key != 27)
+        {
+            imshow("Detection", image);
+            key = waitKey();
+        }
     }
     else if (!video_file.empty())
     {
-        // TODO: Detect objects on every frame of a video.
-
     }
     else if (use_camera)
     {
-        // TODO: Detect objects on a live video stream from camera.
-
+        VideoCapture video;
+        video.open(0);
+        Mat image;
+        cout << "isdkkljdf";
+        while (key != 27)
+        {
+            video >> image;
+            imshow("Detection", image);
+            key = waitKey();
+        }
     }
     else
     {
