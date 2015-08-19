@@ -14,7 +14,9 @@ const char* params =
      "{   | detector |       | XML file with a cascade detector              }"
      "{   | image    |       | image to detect objects on                    }"
      "{   | video    |       | video file to detect on                       }"
-     "{   | camera   | false | whether to detect on video stream from camera }";
+     "{   | camera   | false | whether to detect on video stream from camera }"
+	 "{   | other_detector  | false | use other detector                     }"
+	 "{   | detector1 |       | other detector                               }";
 
 
 void drawDetections(const vector<Rect>& detections,
@@ -29,71 +31,68 @@ void drawDetections(const vector<Rect>& detections,
 
 
 
+
+
 const Scalar red(0, 0, 255);
 const Scalar green(0, 255, 0);
 const Scalar blue(255, 0, 0);
+
 const Scalar colors[] = {red, green, blue};
 
-int main(int argc, char** argv)
+void image_detection(string detector_file,string image_file,string detector_file_other,bool use_other_detector )
 {
-
-	
-
-    // Parse command line arguments.
-    CommandLineParser parser(argc, argv, params);
-	
-	
-
-    // If help flag is present, print help message and exit.
-    if (parser.get<bool>("help"))
-    {
-        parser.printParams();
-        return 0;
-    }
-
-    string detector_file = parser.get<string>("detector");
-	
 	CascadeClassifier face_cascade;
-
-	VideoCapture cap;
-
-
-    CV_Assert(!detector_file.empty());
-    string image_file = parser.get<string>("image");
-    string video_file = parser.get<string>("video");
-    bool use_camera = parser.get<bool>("camera");
+	
+	face_cascade.load(detector_file);
 
 
 	vector<Rect> rectangle;
 	vector<int> rejectLevels;
 	vector<double> levelW;
-    // TODO: Load detector.
-	
-	face_cascade.load(detector_file);
 
 	Mat img;
 
-    if (!image_file.empty())
-    {
+	if (use_other_detector)
+		{
+			CascadeClassifier other_detector(detector_file_other);
 
+			img = imread(image_file);
+
+			face_cascade.detectMultiScale(img,rectangle,rejectLevels,levelW);	
+			
+			drawDetections(rectangle,red,img);
+
+			other_detector.detectMultiScale(img,rectangle,rejectLevels,levelW);	
+			
+			drawDetections(rectangle,green,img);
+
+			imshow("img",img);
+			waitKey(0);
+		}
+		else
+		{
 		
-		img = imread(image_file);
-		face_cascade.detectMultiScale(img,rectangle,rejectLevels,levelW);	
-		drawDetections(rectangle,red,img);
-		imshow("img",img);
-		waitKey(0);
+			img = imread(image_file);
+			face_cascade.detectMultiScale(img,rectangle,rejectLevels,levelW);	
+			drawDetections(rectangle,red,img);
+			imshow("img",img);
+			waitKey(0);
+		}
+}
+void video_detection(string video_file,VideoCapture cap )
+{
+	CascadeClassifier face_cascade;
 
-        // TODO: Detect objects on image.
+	vector<Rect> rectangle;
+	vector<int> rejectLevels;
+	vector<double> levelW;
 
-    }
-    else if (!video_file.empty())
-    {
-		cap.open(video_file);
+	cap.open(video_file);
 
 		cout<<video_file<<endl;
 
 		if (!cap.isOpened())
-			return 0;	
+			return ;	
 
 		Mat frame;
 		namedWindow("img",1);
@@ -114,18 +113,24 @@ int main(int argc, char** argv)
 					break;
 			}
 		}
-        // TODO: Detect objects on every frame of a video.
+}
 
-    }
-    else if (use_camera)
-    {
 
-		cap.open(0);
+
+void camera_detection(VideoCapture cap )
+{
+	CascadeClassifier face_cascade;
+
+	vector<Rect> rectangle;
+	vector<int> rejectLevels;
+	vector<double> levelW;
+
+	cap.open(0);
 
 		if (!cap.isOpened())
 		{
 			cout << "camera don't open" << endl;
-			return 0;
+			return ;
 		}
 
 		Mat frame;
@@ -141,7 +146,61 @@ int main(int argc, char** argv)
 						break;
 			}
 		}
-			
+
+}
+int main(int argc, char** argv)
+{
+
+	
+
+    // Parse command line arguments.
+    CommandLineParser parser(argc, argv, params);
+	
+	
+
+    // If help flag is present, print help message and exit.
+    if (parser.get<bool>("help"))
+    {
+        parser.printParams();
+        return 0;
+    }
+
+    string detector_file = parser.get<string>("detector");
+	string detector_file_other = parser.get<string>("detector1");
+	
+	
+
+	VideoCapture cap;
+
+
+    CV_Assert(!detector_file.empty());
+    string image_file = parser.get<string>("image");
+    string video_file = parser.get<string>("video");
+    bool use_camera = parser.get<bool>("camera");
+
+
+	bool use_other_detector = parser.get<bool>("other_detector");
+
+
+    // TODO: Load detector.
+
+    if (!image_file.empty())
+    {
+		
+		image_detection(detector_file,image_file,detector_file_other,use_other_detector );
+        
+
+    }
+    else if (!video_file.empty())
+    {
+		video_detection(video_file,cap );
+		
+        // TODO: Detect objects on every frame of a video.
+
+    }
+    else if (use_camera)
+    {
+		camera_detection(cap);
 		
         // TODO: Detect objects on a live video stream from camera.
 
