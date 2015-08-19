@@ -98,6 +98,8 @@ int main(int argc, char** argv)
 			cclass2.detectMultiScale(frame, obj2);
 			drawDetections(obj1,red,frame);
 			drawDetections(obj1,green,frame);
+			cs.detectMultiScale(frame,obj1);
+			drawDetections(obj1,Scalar(255,255,255),frame);
 			imshow("Detection",frame);
 			key = waitKey(10);
 			if (key == 27) break;
