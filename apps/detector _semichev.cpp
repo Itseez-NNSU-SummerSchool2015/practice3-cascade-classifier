@@ -74,12 +74,26 @@ int main(int argc, char** argv)
         VideoCapture video;
         video.open(0);
         Mat image;
-        cout << "isdkkljdf";
+        if (!video.isOpened())
+        {
+            cout << "Video not opened";
+            return 0;
+        }
         while (key != 27)
         {
             video >> image;
-            imshow("Detection", image);
-            key = waitKey();
+            vector<Rect> objects;
+            detector.detectMultiScale(image, objects);
+            drawDetections(objects, Scalar(255, 0, 0), image);
+            if (image.empty())
+            {
+                cout << "Not image";
+            }
+            else
+            {
+                imshow("Detection", image);
+                key = waitKey(1);
+            }
         }
     }
     else
