@@ -57,6 +57,11 @@ int main(int argc, char** argv)
 
     if (!image_file.empty())
     {
+		Mat m;
+		m=imread(image_file);
+		vector<Rect> result;
+		detector.detectMultiScale(m,result);
+		std::cout<<result.size()<<endl;
         // TODO: Detect objects on image.
 
     }
