@@ -27,6 +27,8 @@ void drawDetections(const vector<Rect>& detections,
     }
 }
 
+
+
 const Scalar red(0, 0, 255);
 const Scalar green(0, 255, 0);
 const Scalar blue(255, 0, 0);
@@ -34,8 +36,14 @@ const Scalar colors[] = {red, green, blue};
 
 int main(int argc, char** argv)
 {
+
+	
+
     // Parse command line arguments.
     CommandLineParser parser(argc, argv, params);
+	
+	
+
     // If help flag is present, print help message and exit.
     if (parser.get<bool>("help"))
     {
@@ -44,15 +52,37 @@ int main(int argc, char** argv)
     }
 
     string detector_file = parser.get<string>("detector");
+	
+	CascadeClassifier face_cascade;
+
     CV_Assert(!detector_file.empty());
     string image_file = parser.get<string>("image");
     string video_file = parser.get<string>("video");
     bool use_camera = parser.get<bool>("camera");
 
+
+	vector<Rect> rectangle;
+	vector<int> rejectLevels;
+	vector<double> levelW;
     // TODO: Load detector.
+	
+	face_cascade.load(detector_file);
+
+	Mat img;
 
     if (!image_file.empty())
     {
+
+		
+		img = imread(image_file);
+		face_cascade.detectMultiScale(img,rectangle,rejectLevels,levelW);
+		
+		drawDetections(rectangle,red,img);
+		imshow("img",img);
+		waitKey(0);
+
+
+
         // TODO: Detect objects on image.
 
     }
