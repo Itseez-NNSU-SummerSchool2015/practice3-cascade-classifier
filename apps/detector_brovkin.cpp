@@ -74,37 +74,49 @@ int main(int argc, char** argv)
     else if (!video_file.empty())
     {
         // TODO: Detect objects on every frame of a video.
-		VideoCapture cam;
+		VideoCapture cam(video_file);
 		Mat img;
-		cam.open(video_file);
 		if (cam.isOpened())
 		{
 			cout<<"kk";
 		}
-		cout << "no";
 		vector<Rect> obj;
-		namedWindow("Detection");  
+		namedWindow("Detection");
+		Mat frame;
+		cam >> frame;
 		for (;;)
 		{
-			Mat frame(img);
 			cam >> frame;
-			if (!frame.empty())
-			{
-				int key;
-				drawDetections(obj,Scalar(0,255,255),frame);
-				imshow("Detection",frame);
-				key = waitKey();
-				if (key == 27) break;
-
-			}else{
-				cout<<"empty";
-			}
+			int key;
+			cclass.detectMultiScale(frame, obj);
+			drawDetections(obj,Scalar(0,255,255),frame);
+			imshow("Detection",frame);
+			key = waitKey(10);
+			if (key == 27) break;
 		}
     }
     else if (use_camera)
     {
         // TODO: Detect objects on a live video stream from camera.
-
+		VideoCapture cam(0);
+		if (cam.isOpened())
+		{
+			cout<<"kk";
+		}
+		vector<Rect> obj;
+		namedWindow("Detection");
+		Mat frame;
+		cam >> frame;
+		for (;;)
+		{
+			cam >> frame;
+			int key;
+			cclass.detectMultiScale(frame, obj);
+			drawDetections(obj,Scalar(0,255,255),frame);
+			imshow("Detection",frame);
+			key = waitKey(10);
+			if (key == 27) break;
+		}
     }
     else
     {
