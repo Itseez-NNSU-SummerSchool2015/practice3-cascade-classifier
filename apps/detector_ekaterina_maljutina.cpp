@@ -117,35 +117,51 @@ void video_detection(string video_file,VideoCapture cap )
 
 
 
-void camera_detection(VideoCapture cap )
+void camera_detection(VideoCapture cap, string detector_file,bool use_other_detector,string detector_file_other)
 {
-	CascadeClassifier face_cascade;
-
+	CascadeClassifier face_cascade(detector_file);
+	CascadeClassifier face_cascade_other(detector_file_other);
 	vector<Rect> rectangle;
 	vector<int> rejectLevels;
 	vector<double> levelW;
 
 	cap.open(0);
 
-		if (!cap.isOpened())
-		{
-			cout << "camera don't open" << endl;
-			return ;
-		}
+	if (!cap.isOpened())
+	{
+		cout << "camera don't open" << endl;
+		return ;
+	}
 
-		Mat frame;
-		while(true)
+	Mat frame;
+	while(true)
+	{
+		cap.read(frame);
+		if (!frame.empty())
 		{
-			cap.read(frame);
-			if (!frame.empty())
+			
+			if (use_other_detector)
 			{
-				face_cascade.detectMultiScale(frame,rectangle,rejectLevels,levelW);	
-				drawDetections(rectangle,red,frame);
-				imshow("frame",frame);
-				if(waitKey(27) >= 0)
-						break;
+					face_cascade.detectMultiScale(frame,rectangle,rejectLevels,levelW);	
+					drawDetections(rectangle,red,frame);
+					face_cascade_other.detectMultiScale(frame,rectangle,rejectLevels,levelW);		
+					drawDetections(rectangle,green,frame);
+					imshow("img",frame);
+					if(waitKey(27) >= 0)
+							break;
+					
+			}
+			else
+			{
+					face_cascade.detectMultiScale(frame,rectangle,rejectLevels,levelW);	
+					drawDetections(rectangle,red,frame);
+					imshow("frame",frame);
+					if(waitKey(27) >= 0)
+							break;
+					
 			}
 		}
+	}
 
 }
 int main(int argc, char** argv)
@@ -200,7 +216,7 @@ int main(int argc, char** argv)
     }
     else if (use_camera)
     {
-		camera_detection(cap);
+		camera_detection(cap,detector_file ,use_other_detector,detector_file_other );
 		
         // TODO: Detect objects on a live video stream from camera.
 
