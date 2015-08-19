@@ -68,10 +68,24 @@ int main(int argc, char** argv)
         // TODO: Detect objects on every frame of a video.
 
     }
+
     else if (use_camera)
     {
-        // TODO: Detect objects on a live video stream from camera.
-
+        CascadeClassifier face_cascade;
+        face_cascade.load( "C:\OpenCV-2.4.11\opencv\sources\data\haarcascades\haarcascade_frontalface_alt2.xml" );
+        Mat yourface; 
+        vector<Rect> faces;
+        
+        VideoCapture cap(0);         if(!cap.isOpened())       cout<<"can't open video from camera" ;
+        namedWindow("noname",1);
+        while(true)
+            {
+                cap >> yourface;
+                face_cascade.detectMultiScale(yourface, faces, 1.1, 3, 0, Size(10, 10), Size(200,200));
+                if(faces.size()>0)  imshow("noname", yourface);
+                else cout<<"where are you?";
+                if(waitKey(30) >= 0) break;
+            }
     }
     else
     {
