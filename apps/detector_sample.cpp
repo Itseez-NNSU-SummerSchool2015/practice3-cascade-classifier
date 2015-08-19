@@ -50,13 +50,12 @@ int main(int argc, char** argv)
     string video_file = parser.get<string>("video");
     bool use_camera = parser.get<bool>("camera");
 
-    // TODO: Load detector.
     CascadeClassifier detector;
     detector.load(detector_file);
 
     if (!image_file.empty())
     {
-        // TODO: Detect objects on image.
+		cout << "reading image from file '" << image_file << "'" << endl;
         Mat image = imread(image_file);
         CV_Assert(!image.empty());
         vector<Rect> detections;
@@ -67,12 +66,11 @@ int main(int argc, char** argv)
     }
     else if (!video_file.empty())
     {
-        // TODO: Detect objects on every frame of a video.
+		cout << "reading video from file '" << video_file << "'" << endl;
         char key = 0;
         VideoCapture video(video_file);
         CV_Assert(video.isOpened());
         Mat frame;
-        //video.retrieve(frame);
         video >> frame;
         while (!frame.empty() && key != 27)
         {
@@ -81,19 +79,22 @@ int main(int argc, char** argv)
             drawDetections(detections, colors[0], frame);
             imshow("detections", frame);
             key = waitKey(1);
-            // video.retrieve(frame);
             video >> frame;
         }
     }
     else if (use_camera)
     {
-        // TODO: Detect objects on a live video stream from camera.
+		cout << "reading live video stream from camera..." << endl;
         char key = 0;
         VideoCapture video(0);
         CV_Assert(video.isOpened());
         Mat frame;
-        // video.retrieve(frame);
         video >> frame;
+		// Dirty hack to use camera on Windows.
+		while (frame.empty())
+		{
+			video >> frame;
+		}
         while (!frame.empty() && key != 27)
         {
             vector<Rect> detections;
@@ -101,7 +102,6 @@ int main(int argc, char** argv)
             drawDetections(detections, colors[0], frame);
             imshow("detections", frame);
             key = waitKey(1);
-            // video.retrieve(frame);
             video >> frame;
         }
     }
