@@ -32,6 +32,10 @@ const Scalar green(0, 255, 0);
 const Scalar blue(255, 0, 0);
 const Scalar colors[] = {red, green, blue};
 
+void detect(const Mat& src, CascadeClassifier& detector, Mat& out) {
+
+}
+
 int main(int argc, char** argv)
 {
     // Parse command line arguments.
@@ -49,12 +53,41 @@ int main(int argc, char** argv)
     string video_file = parser.get<string>("video");
     bool use_camera = parser.get<bool>("camera");
 
-    // TODO: Load detector.
+    CascadeClassifier detector;
+	if (!detector.load(detector_file)) 
+	{
+		cerr << "Failed to load detector." << endl;
+		return 1;
+	}
 
     if (!image_file.empty())
     {
-        // TODO: Detect objects on image.
+		Mat img = imread(image_file);
+		Mat out = img.clone();
 
+		vector<Rect> objects;
+        detector.detectMultiScale(img, objects);
+
+		drawDetections(objects, red, out);
+		/*
+		for (auto it = objects.cbegin(), iend = objects.cend(); it != iend; ++it) {
+			Mat rect = out(*it);
+
+			struct BGRColor {
+				uchar b;
+				uchar g;
+				uchar r;
+			};
+			for (auto i2 = rect.begin<BGRColor>(), i2end = rect.end<BGRColor>(); i2 != i2end; ++i2) {
+				(*i2).b = 0;
+				(*i2).g = 0;
+				(*i2).r = 255;
+			}
+		}
+		*/
+
+		imshow("Detected frames", out);
+		waitKey();
     }
     else if (!video_file.empty())
     {
