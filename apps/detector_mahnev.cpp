@@ -49,24 +49,20 @@ int main(int argc, char** argv)
     string image_file = parser.get<string>("image");
     string video_file = parser.get<string>("video");
     bool use_camera = parser.get<bool>("camera");
-	CascadeClassifier image_load;
 
-
-	Mat image;
-	image = imread(image_file, CV_LOAD_IMAGE_COLOR);
-
-
-    // TODO: Load detector.
-
-	image_load.load(detector_file);
+	CascadeClassifier image_load(detector_file);
 	
     if (!image_file.empty())
     {
+		Mat image;
+		image = imread(image_file, CV_LOAD_IMAGE_COLOR);
+
         // TODO: Detect objects on image.
 		std::vector<Rect> detec;
 		image_load.detectMultiScale(image, detec);
-		imshow (" ",image);
-
+		drawDetections(detec, red, image);
+		imshow(" ", image);
+		waitKey();
     }
     else if (!video_file.empty())
     {
