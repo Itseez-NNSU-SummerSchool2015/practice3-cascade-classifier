@@ -50,6 +50,10 @@ int main(int argc, char** argv)
     bool use_camera = parser.get<bool>("camera");
 
     // TODO: Load detector.
+	CascadeClassifier detector;
+	if(!detector.load(detector_file)){
+									 cout<<"bad detector file name"<<endl;
+									 }
 
     if (!image_file.empty())
     {
