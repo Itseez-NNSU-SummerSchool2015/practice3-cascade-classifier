@@ -49,21 +49,65 @@ int main(int argc, char** argv)
     string video_file = parser.get<string>("video");
     bool use_camera = parser.get<bool>("camera");
 
-    // TODO: Load detector.
+    //Load detector.
+	CascadeClassifier detector;
+	detector.load(detector_file);
 
     if (!image_file.empty())
     {
-        // TODO: Detect objects on image.
-
+        // Detect objects on image.
+		Mat image;
+		vector<Rect> detections;
+		image = imread(image_file, CV_LOAD_IMAGE_COLOR);
+		detector.detectMultiScale(image, detections);
+		drawDetections(detections, red,image);
+		imshow(image_file, image);
+		waitKey();
     }
     else if (!video_file.empty())
     {
         // TODO: Detect objects on every frame of a video.
+		VideoCapture video;
+		video.open(video_file); 
+		CV_Assert(video.isOpened());
+		Mat frame;
+		video >> frame;
+	    namedWindow("video_detector",CV_WINDOW_AUTOSIZE);
+		char key = 0;
+	
+	    for(; key != 27;)
+		{
+			video >> frame;
+			vector<Rect> detections;
+			detector.detectMultiScale(frame, detections);
+			drawDetections(detections, red, frame);
+			if (!frame.empty())
+			{
+				imshow("video_detector", frame);
+			}
+			key = waitKey(10);
+		}
 
     }
     else if (use_camera)
     {
-        // TODO: Detect objects on a live video stream from camera.
+        // Detect objects on a live video stream from camera.
+		VideoCapture cap(0); // open the default camera
+		if(!cap.isOpened())  // check if we succeeded
+			return -1;
+		Mat frame;
+		cap >> frame;
+	    namedWindow("camera_detector",1);
+		char key = 0;
+	    for(; key != 27;)
+		{
+			cap >> frame; 
+			vector<Rect> detections;
+			detector.detectMultiScale(frame, detections);
+			drawDetections(detections, red, frame);
+			imshow("camera_detector", frame);
+			key = waitKey(10);
+		}
 
     }
     else
