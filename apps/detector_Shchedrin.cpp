@@ -80,7 +80,18 @@ int main(int argc, char** argv)
     else if (use_camera)
     {
         // TODO: Detect objects on a live video stream from camera.
-        
+        int key = 0;
+        VideoCapture cap(0);
+        Mat image, res;
+        do{
+            cap >> image;
+            if(image.empty()){
+                continue;
+            }
+            detectOnImage(classif, image, res);
+            imshow("detect", res);
+            key = waitKey(1);
+        }while(key != 27);
     }
     else
     {
