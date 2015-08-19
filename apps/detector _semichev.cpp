@@ -82,15 +82,15 @@ int main(int argc, char** argv)
         while (key != 27)
         {
             video >> image;
-            vector<Rect> objects;
-            detector.detectMultiScale(image, objects);
-            drawDetections(objects, Scalar(255, 0, 0), image);
             if (image.empty())
             {
                 cout << "Not image";
             }
             else
             {
+                vector<Rect> objects;
+                detector.detectMultiScale(image, objects);
+                drawDetections(objects, Scalar(255, 0, 0), image);
                 imshow("Detection", image);
                 key = waitKey(1);
             }
