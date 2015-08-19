@@ -34,6 +34,8 @@ const Scalar colors[] = {red, green, blue};
 
 int main(int argc, char** argv)
 {
+    CascadeClassifier detec;
+
     // Parse command line arguments.
     CommandLineParser parser(argc, argv, params);
     // If help flag is present, print help message and exit.
@@ -50,9 +52,14 @@ int main(int argc, char** argv)
     bool use_camera = parser.get<bool>("camera");
 
     // TODO: Load detector.
+    detec.load(detector_file); 
 
     if (!image_file.empty())
     {
+         Mat img = imread(image_file);
+         vector<Rect> logos;
+         detec.detectMultiScale(img, logos, 1.1, 3, 0, Size(10, 10), Size(200,200));
+         cout<<logos.size();
         // TODO: Detect objects on image.
 
     }
