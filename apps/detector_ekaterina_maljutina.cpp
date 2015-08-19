@@ -39,7 +39,9 @@ const Scalar blue(255, 0, 0);
 
 const Scalar colors[] = {red, green, blue};
 
-void image_detection(string detector_file,string image_file,string detector_file_other,bool use_other_detector )
+void image_detection(string detector_file,
+	string image_file,string detector_file_other,
+	bool use_other_detector )
 {
 	CascadeClassifier face_cascade;
 	
@@ -79,9 +81,10 @@ void image_detection(string detector_file,string image_file,string detector_file
 			waitKey(0);
 		}
 }
-void video_detection(string video_file,VideoCapture cap )
+void video_detection(string video_file,VideoCapture cap,string detector_file )
 {
-	CascadeClassifier face_cascade;
+	CascadeClassifier face_cascade(detector_file);
+
 
 	vector<Rect> rectangle;
 	vector<int> rejectLevels;
@@ -109,7 +112,7 @@ void video_detection(string video_file,VideoCapture cap )
 				face_cascade.detectMultiScale(frame,rectangle,rejectLevels,levelW);
 				drawDetections(rectangle,red,frame);
 				imshow("img",frame);
-				if(waitKey(0) >= 0)
+				if(waitKey(27) >= 0)
 					break;
 			}
 		}
@@ -173,7 +176,6 @@ int main(int argc, char** argv)
     CommandLineParser parser(argc, argv, params);
 	
 	
-
     // If help flag is present, print help message and exit.
     if (parser.get<bool>("help"))
     {
@@ -209,7 +211,7 @@ int main(int argc, char** argv)
     }
     else if (!video_file.empty())
     {
-		video_detection(video_file,cap );
+		video_detection(video_file,cap,detector_file );
 		
         // TODO: Detect objects on every frame of a video.
 
