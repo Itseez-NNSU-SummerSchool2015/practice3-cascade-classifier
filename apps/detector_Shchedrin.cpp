@@ -75,13 +75,32 @@ int main(int argc, char** argv)
     }
     else if (!video_file.empty())
     {
+        int key = 0;
+        VideoCapture cap(video_file);
+        if(!cap.isOpened()){
+            cerr<<"Can not open video"<<endl;
+            return -1;
+        }
+        Mat image, res;
+        do{
+            cap >> image;
+            if(image.empty()){
+                continue;
+            }
+            detectOnImage(classif, image, res);
+            imshow("detect", res);
+            key = waitKey(1);
+        }while(key != 27);
         
     }
     else if (use_camera)
     {
-        // TODO: Detect objects on a live video stream from camera.
         int key = 0;
         VideoCapture cap(0);
+        if(!cap.isOpened()){
+            cerr<<"Can not connect to camera"<<endl;
+            return -1;
+        }
         Mat image, res;
         do{
             cap >> image;
