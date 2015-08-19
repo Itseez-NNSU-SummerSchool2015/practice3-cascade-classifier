@@ -104,6 +104,6 @@ __Дополнительные задачи:__
 [practice1]: https://github.com/Itseez-NNSU-SummerSchool2015/practice1-devtools
 [git-intro]: https://github.com/Itseez-NNSU-SummerSchool2015/practice1-devtools#Общие-инструкции-по-работе-с-git
 [cmake-msvs]: https://github.com/Itseez-NNSU-SummerSchool2015/practice1-devtools#Сборка-проекта-с-помощью-cmake-и-microsoft-visual-studio
-[tasks]: https://github.com/Itseez-NNSU-SummerSchool2015/practice2-opencv-intro#Задачи
+[tasks]: https://github.com/Itseez-NNSU-SummerSchool2015/practice3-detection#Задачи
 [capture]: http://docs.opencv.org/modules/highgui/doc/reading_and_writing_images_and_video.html#videocapture
 [cascadeclassifier]: http://docs.opencv.org/modules/objdetect/doc/cascade_classification.html#cascadeclassifier
