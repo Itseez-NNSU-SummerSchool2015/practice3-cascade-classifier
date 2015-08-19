@@ -51,7 +51,11 @@ int main(int argc, char** argv)
     bool use_camera = parser.get<bool>("camera");
 
 	CascadeClassifier image_load(detector_file);
+
+
 	
+	
+
     if (!image_file.empty())
     {
 		Mat image;
@@ -68,10 +72,24 @@ int main(int argc, char** argv)
     {
         // TODO: Detect objects on every frame of a video.
 
+
     }
     else if (use_camera)
     {
-        // TODO: Detect objects on a live video stream from camera.
+		VideoCapture cap(0);
+		CV_Assert(cap.isOpened());
+		Mat frame;
+		cap >> frame;
+		for(;;)
+		{
+			cap >> frame;
+			std::vector<Rect> detec;
+			image_load.detectMultiScale(frame, detec);
+			drawDetections(detec, red, frame);
+			imshow("", frame);
+			if(waitKey(30) >= 0) 
+				break;
+		}
 
     }
     else
