@@ -50,10 +50,27 @@ int main(int argc, char** argv)
     bool use_camera = parser.get<bool>("camera");
 
     // TODO: Load detector.
+    CascadeClassifier classif;
+    
+    if(!classif.load(detector_file)){
+        cerr<<"Can not load detector"<<endl;
+    }
 
     if (!image_file.empty())
-    {
+    {   
+        vector<Rect> found;
+        Mat image;
+        image = imread(image_file);
+        classif.detectMultiScale(image, found);
         // TODO: Detect objects on image.
+        int key = 0;
+        //while(key != 27){
+            for(int i = 0; i < found.size(); i++){
+                rectangle(image, found[i],Scalar(100,200,0),2);
+            }
+            imshow("detect",image);
+            key = waitKey();
+       // }
 
     }
     else if (!video_file.empty())
