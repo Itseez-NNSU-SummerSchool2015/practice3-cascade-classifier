@@ -55,6 +55,9 @@ int main(int argc, char** argv)
 	
 	CascadeClassifier face_cascade;
 
+	VideoCapture cap;
+
+
     CV_Assert(!detector_file.empty());
     string image_file = parser.get<string>("image");
     string video_file = parser.get<string>("video");
@@ -75,24 +78,71 @@ int main(int argc, char** argv)
 
 		
 		img = imread(image_file);
-		face_cascade.detectMultiScale(img,rectangle,rejectLevels,levelW);
-		
+		face_cascade.detectMultiScale(img,rectangle,rejectLevels,levelW);	
 		drawDetections(rectangle,red,img);
 		imshow("img",img);
 		waitKey(0);
-
-
 
         // TODO: Detect objects on image.
 
     }
     else if (!video_file.empty())
     {
+		cap.open(video_file);
+
+		cout<<video_file<<endl;
+
+		if (!cap.isOpened())
+			return 0;	
+
+		Mat frame;
+		namedWindow("img",1);
+		for (;;)
+		{
+			cap>>frame;
+			if (frame.empty() )
+			{
+				cout << "frame don't open" << endl;
+				break;
+			}
+			else
+			{
+				face_cascade.detectMultiScale(frame,rectangle,rejectLevels,levelW);
+				drawDetections(rectangle,red,frame);
+				imshow("img",frame);
+				if(waitKey(0) >= 0)
+					break;
+			}
+		}
         // TODO: Detect objects on every frame of a video.
 
     }
     else if (use_camera)
     {
+
+		cap.open(0);
+
+		if (!cap.isOpened())
+		{
+			cout << "camera don't open" << endl;
+			return 0;
+		}
+
+		Mat frame;
+		while(true)
+		{
+			cap.read(frame);
+			if (!frame.empty())
+			{
+				face_cascade.detectMultiScale(frame,rectangle,rejectLevels,levelW);	
+				drawDetections(rectangle,red,frame);
+				imshow("frame",frame);
+				if(waitKey(27) >= 0)
+						break;
+			}
+		}
+			
+		
         // TODO: Detect objects on a live video stream from camera.
 
     }
@@ -100,6 +150,8 @@ int main(int argc, char** argv)
     {
         cout << "Declare a source of images to detect on." << endl;
     }
+
+	waitKey(0);
 
     return 0;
 }
