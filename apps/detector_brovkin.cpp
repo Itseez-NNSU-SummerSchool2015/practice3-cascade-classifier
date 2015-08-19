@@ -50,16 +50,56 @@ int main(int argc, char** argv)
     bool use_camera = parser.get<bool>("camera");
 
     // TODO: Load detector.
+	CascadeClassifier cclass;
+	cclass.load(detector_file);
 
     if (!image_file.empty())
     {
         // TODO: Detect objects on image.
-
+		Mat img = imread(image_file);
+		vector<Rect> obj;
+		cclass.detectMultiScale(img, obj);
+		if (!img.empty())
+		{
+			namedWindow("Detection");  
+			int key;
+			drawDetections(obj,Scalar(0,255,255),img);
+			while (key!=27)
+			{
+				imshow("Detection",img);
+				key = waitKey();
+			}
+		}
     }
     else if (!video_file.empty())
     {
         // TODO: Detect objects on every frame of a video.
+		VideoCapture cam;
+		Mat img;
+		cam.open(video_file);
+		if (cam.isOpened())
+		{
+			cout<<"kk";
+		}
+		cout << "no";
+		vector<Rect> obj;
+		namedWindow("Detection");  
+		for (;;)
+		{
+			Mat frame(img);
+			cam >> frame;
+			if (!frame.empty())
+			{
+				int key;
+				drawDetections(obj,Scalar(0,255,255),frame);
+				imshow("Detection",frame);
+				key = waitKey();
+				if (key == 27) break;
 
+			}else{
+				cout<<"empty";
+			}
+		}
     }
     else if (use_camera)
     {
