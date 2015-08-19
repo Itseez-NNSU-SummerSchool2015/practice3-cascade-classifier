@@ -52,7 +52,9 @@ int main(int argc, char** argv)
     // TODO: Load detector.
 	CascadeClassifier cclass;
 	cclass.load(detector_file);
-
+	CascadeClassifier cs;
+	cs.load("./haarcascade_frontalface_default.xml");
+	if(cs.empty()) cout<<"lol";
     if (!image_file.empty())
     {
         // TODO: Detect objects on image.
@@ -75,21 +77,19 @@ int main(int argc, char** argv)
     {
         // TODO: Detect objects on every frame of a video.
 		VideoCapture cam(video_file);
-		Mat img;
-		if (cam.isOpened())
-		{
-			cout<<"kk";
-		}
 		vector<Rect> obj;
 		namedWindow("Detection");
 		Mat frame;
 		cam >> frame;
-		for (;;)
+		while (cam.isOpened())
 		{
 			cam >> frame;
 			int key;
 			cclass.detectMultiScale(frame, obj);
 			drawDetections(obj,Scalar(0,255,255),frame);
+			cs.load("./cascade.xml");
+			cs.detectMultiScale(frame,obj);
+			drawDetections(obj,Scalar(255,0,0),frame);
 			imshow("Detection",frame);
 			key = waitKey(10);
 			if (key == 27) break;
@@ -98,11 +98,8 @@ int main(int argc, char** argv)
     else if (use_camera)
     {
         // TODO: Detect objects on a live video stream from camera.
+		
 		VideoCapture cam(0);
-		if (cam.isOpened())
-		{
-			cout<<"kk";
-		}
 		vector<Rect> obj;
 		namedWindow("Detection");
 		Mat frame;
@@ -113,6 +110,12 @@ int main(int argc, char** argv)
 			int key;
 			cclass.detectMultiScale(frame, obj);
 			drawDetections(obj,Scalar(0,255,255),frame);
+			cs.load("./haarcascade_frontalface_default.xml");
+			cs.detectMultiScale(frame,obj);
+			drawDetections(obj,Scalar(255,255,255),frame);
+			cs.load("./cascade.xml");
+			cs.detectMultiScale(frame,obj);
+			drawDetections(obj,Scalar(255,0,0),frame);
 			imshow("Detection",frame);
 			key = waitKey(10);
 			if (key == 27) break;
