@@ -32,6 +32,15 @@ const Scalar green(0, 255, 0);
 const Scalar blue(255, 0, 0);
 const Scalar colors[] = {red, green, blue};
 
+void detectOnImage(CascadeClassifier &classif, const Mat &image, Mat &res){
+    res = image.clone();
+    vector<Rect> found;
+    classif.detectMultiScale(image, found);    
+    for(int i = 0; i < found.size(); i++){
+        rectangle(res, found[i],Scalar(100,200,0),2);
+    }
+}
+
 int main(int argc, char** argv)
 {
     // Parse command line arguments.
@@ -58,30 +67,20 @@ int main(int argc, char** argv)
 
     if (!image_file.empty())
     {   
-        vector<Rect> found;
-        Mat image;
-        image = imread(image_file);
-        classif.detectMultiScale(image, found);
-        // TODO: Detect objects on image.
-        int key = 0;
-        //while(key != 27){
-            for(int i = 0; i < found.size(); i++){
-                rectangle(image, found[i],Scalar(100,200,0),2);
-            }
-            imshow("detect",image);
-            key = waitKey();
-       // }
-
+        Mat image = imread(image_file);
+        Mat res;
+        detectOnImage(classif, image, res);
+        imshow("detect", res);
+        int key = waitKey();
     }
     else if (!video_file.empty())
     {
-        // TODO: Detect objects on every frame of a video.
-
+        
     }
     else if (use_camera)
     {
         // TODO: Detect objects on a live video stream from camera.
-
+        
     }
     else
     {
