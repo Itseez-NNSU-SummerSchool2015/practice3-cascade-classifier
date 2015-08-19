@@ -10,11 +10,12 @@ using namespace std;
 using namespace cv;
 
 const char* params =
-     "{ h | help     | false | print usage                                   }"
-     "{   | detector |       | XML file with a cascade detector              }"
-     "{   | image    |       | image to detect objects on                    }"
-     "{   | video    |       | video file to detect on                       }"
-     "{   | camera   | false | whether to detect on video stream from camera }";
+     "{ h | help      | false | print usage                                   }"
+     "{   | detector1 |       | XML file with a cascade detector              }"
+	 "{   | detector2 |       | XML file with a cascade detector              }"
+     "{   | image     |       | image to detect objects on                    }"
+     "{   | video     |       | video file to detect on                       }"
+     "{   | camera    | false | whether to detect on video stream from camera }";
 
 
 void drawDetections(const vector<Rect>& detections,
@@ -43,15 +44,19 @@ int main(int argc, char** argv)
         return 0;
     }
 
-    string detector_file = parser.get<string>("detector");
-    CV_Assert(!detector_file.empty());
+    string detector1_file = parser.get<string>("detector1");
+    CV_Assert(!detector1_file.empty());
+	string detector2_file = parser.get<string>("detector2");
+    CV_Assert(!detector2_file.empty());
     string image_file = parser.get<string>("image");
     string video_file = parser.get<string>("video");
     bool use_camera = parser.get<bool>("camera");
 
     // TODO: Load detector.
-	CascadeClassifier cclass;
-	cclass.load(detector_file);
+	CascadeClassifier cclass1;
+	cclass1.load(detector1_file);
+	CascadeClassifier cclass2;
+	cclass2.load(detector2_file);
 	CascadeClassifier cs;
 	cs.load("./haarcascade_frontalface_default.xml");
 	if(cs.empty()) cout<<"lol";
@@ -59,13 +64,16 @@ int main(int argc, char** argv)
     {
         // TODO: Detect objects on image.
 		Mat img = imread(image_file);
-		vector<Rect> obj;
-		cclass.detectMultiScale(img, obj);
+		vector<Rect> obj1;
+		vector<Rect> obj2;
+		cclass1.detectMultiScale(img, obj1);
+		cclass2.detectMultiScale(img, obj2);
 		if (!img.empty())
 		{
 			namedWindow("Detection");  
 			int key;
-			drawDetections(obj,Scalar(0,255,255),img);
+			drawDetections(obj1,red,img);
+			drawDetections(obj2,green,img);
 			while (key!=27)
 			{
 				imshow("Detection",img);
@@ -77,7 +85,8 @@ int main(int argc, char** argv)
     {
         // TODO: Detect objects on every frame of a video.
 		VideoCapture cam(video_file);
-		vector<Rect> obj;
+		vector<Rect> obj1;
+		vector<Rect> obj2;
 		namedWindow("Detection");
 		Mat frame;
 		cam >> frame;
@@ -85,11 +94,10 @@ int main(int argc, char** argv)
 		{
 			cam >> frame;
 			int key;
-			cclass.detectMultiScale(frame, obj);
-			drawDetections(obj,Scalar(0,255,255),frame);
-			cs.load("./cascade.xml");
-			cs.detectMultiScale(frame,obj);
-			drawDetections(obj,Scalar(255,0,0),frame);
+			cclass1.detectMultiScale(frame, obj1);
+			cclass2.detectMultiScale(frame, obj2);
+			drawDetections(obj1,red,frame);
+			drawDetections(obj1,green,frame);
 			imshow("Detection",frame);
 			key = waitKey(10);
 			if (key == 27) break;
@@ -100,7 +108,8 @@ int main(int argc, char** argv)
         // TODO: Detect objects on a live video stream from camera.
 		
 		VideoCapture cam(0);
-		vector<Rect> obj;
+		vector<Rect> obj1;
+		vector<Rect> obj2;
 		namedWindow("Detection");
 		Mat frame;
 		cam >> frame;
@@ -108,14 +117,12 @@ int main(int argc, char** argv)
 		{
 			cam >> frame;
 			int key;
-			cclass.detectMultiScale(frame, obj);
-			drawDetections(obj,Scalar(0,255,255),frame);
-			cs.load("./haarcascade_frontalface_default.xml");
-			cs.detectMultiScale(frame,obj);
-			drawDetections(obj,Scalar(255,255,255),frame);
-			cs.load("./cascade.xml");
-			cs.detectMultiScale(frame,obj);
-			drawDetections(obj,Scalar(255,0,0),frame);
+			cclass1.detectMultiScale(frame, obj1);
+			cclass2.detectMultiScale(frame, obj2);
+			drawDetections(obj1,red,frame);
+			drawDetections(obj2,green,frame);
+			cs.detectMultiScale(frame,obj1);
+			drawDetections(obj1,Scalar(255,255,255),frame);
 			imshow("Detection",frame);
 			key = waitKey(10);
 			if (key == 27) break;
