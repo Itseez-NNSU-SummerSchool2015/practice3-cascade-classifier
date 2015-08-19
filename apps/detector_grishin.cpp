@@ -51,19 +51,84 @@ int main(int argc, char** argv)
 
     // TODO: Load detector.
 
+	CascadeClassifier ccl;
+
+	ccl.load(detector_file);
+
     if (!image_file.empty())
     {
         // TODO: Detect objects on image.
+		
+		//Mat img = cvLoadImage(image_file.c_str(), 1);
+		Mat img = imread(image_file);
+
+		vector<Rect> objects;
+
+		ccl.detectMultiScale(img, objects);		
+
+		drawDetections(objects, Scalar(255, 0, 0), img);
+
+		waitKey(0);
 
     }
     else if (!video_file.empty())
     {
         // TODO: Detect objects on every frame of a video.
 
+		VideoCapture cap(video_file); // open the default camera
+		if(!cap.isOpened())  // check if we succeeded
+			return -1;
+
+		while(1)
+		{
+			Mat frame;
+			cap >> frame; // get a new frame from camera
+
+			while(frame.empty())
+			{
+				cap >> frame;
+			}
+
+			vector<Rect> objects;
+
+			ccl.detectMultiScale(frame, objects);		
+
+			drawDetections(objects, Scalar(255, 0, 0), frame);
+
+			//imshow("BoxFace", frame);
+			//if(waitKey(30) >= 0) break;
+			
+		}
+
     }
     else if (use_camera)
     {
         // TODO: Detect objects on a live video stream from camera.
+
+		VideoCapture cap(0); // open the default camera
+		if(!cap.isOpened())  // check if we succeeded
+			return -1;
+
+		while(1)
+		{
+			Mat frame;
+			cap >> frame; // get a new frame from camera
+
+			while(frame.empty())
+			{
+				cap >> frame;
+			}
+
+			vector<Rect> objects;
+
+			ccl.detectMultiScale(frame, objects);		
+
+			drawDetections(objects, Scalar(255, 0, 0), frame);
+
+			//imshow("BoxFace", frame);
+			//if(waitKey(30) >= 0) break;
+			
+		}
 
     }
     else
