@@ -57,9 +57,6 @@ int main(int argc, char** argv)
 	cclass1.load(detector1_file);
 	CascadeClassifier cclass2;
 	cclass2.load(detector2_file);
-	CascadeClassifier cs;
-	cs.load("./haarcascade_frontalface_default.xml");
-	if(cs.empty()) cout<<"lol";
     if (!image_file.empty())
     {
         // TODO: Detect objects on image.
@@ -98,8 +95,6 @@ int main(int argc, char** argv)
 			cclass2.detectMultiScale(frame, obj2);
 			drawDetections(obj1,red,frame);
 			drawDetections(obj1,green,frame);
-			cs.detectMultiScale(frame,obj1);
-			drawDetections(obj1,Scalar(255,255,255),frame);
 			imshow("Detection",frame);
 			key = waitKey(10);
 			if (key == 27) break;
@@ -123,8 +118,6 @@ int main(int argc, char** argv)
 			cclass2.detectMultiScale(frame, obj2);
 			drawDetections(obj1,red,frame);
 			drawDetections(obj2,green,frame);
-			cs.detectMultiScale(frame,obj1);
-			drawDetections(obj1,Scalar(255,255,255),frame);
 			imshow("Detection",frame);
 			key = waitKey(10);
 			if (key == 27) break;
